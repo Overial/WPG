@@ -67,6 +67,9 @@ void AWPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 		// Showing Command Menu
 		EnhancedInputComponent->BindAction(ShowCommandMenuAction, ETriggerEvent::Started, this, &AWPGCharacter::ShowCommandMenu);
+
+		// Showing Pause Menu
+		EnhancedInputComponent->BindAction(ShowPauseMenuAction, ETriggerEvent::Started, this, &AWPGCharacter::ShowPauseMenu);
 	}
 }
 
