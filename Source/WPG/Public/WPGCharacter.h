@@ -57,8 +57,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* JumpAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* ShowCommandMenuAction;
+
 protected:
 	void Move(const FInputActionValue& Value);
 
 	void Look(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowCommandMenu(const FInputActionValue& Value);
 };

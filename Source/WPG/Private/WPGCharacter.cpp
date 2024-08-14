@@ -64,6 +64,9 @@ void AWPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		// Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		// Showing Command Menu
+		EnhancedInputComponent->BindAction(ShowCommandMenuAction, ETriggerEvent::Started, this, &AWPGCharacter::ShowCommandMenu);
 	}
 }
 
