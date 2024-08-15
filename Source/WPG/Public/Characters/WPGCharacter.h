@@ -11,6 +11,8 @@ class UCameraComponent;
 class UAbilitySystemComponent;
 class UInputMappingContext;
 class UInputAction;
+class UWPGGameplayAbility;
+
 struct FInputActionValue;
 
 UCLASS()
@@ -44,6 +46,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
+	TArray<TSubclassOf<UWPGGameplayAbility>> CharacterAbilities;
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputMappingContext* InputMappingContext;
@@ -68,9 +73,14 @@ protected:
 
 	void Look(const FInputActionValue& Value);
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void ShowCommandMenu();
+protected:
+	void InitAbilities(TArray<TSubclassOf<UWPGGameplayAbility>> AbilitiesToAdd);
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void ShowPauseMenu();
+	void HandleJumpPressed();
+
+	void HandleJumpReleased();
+
+	void HandleShowCommandMenu();
+
+	void HandleShowPauseMenu();
 };

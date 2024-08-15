@@ -1,9 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "WPGCharacter.h"
+#include "Characters/WPGCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "AbilitySystemComponent.h"
+#include "Abilities/WPGGameplayAbility.h"
+#include "Abilities/PlayerAbilityInputID.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
@@ -38,6 +40,8 @@ void AWPGCharacter::BeginPlay()
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
+
+	InitAbilities(CharacterAbilities);
 }
 
 // Called every frame
@@ -62,14 +66,30 @@ void AWPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWPGCharacter::Look);
 
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWPGCharacter::HandleJumpPressed);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AWPGCharacter::HandleJumpReleased);
 
 		// Showing Command Menu
-		EnhancedInputComponent->BindAction(ShowCommandMenuAction, ETriggerEvent::Started, this, &AWPGCharacter::ShowCommandMenu);
+		EnhancedInputComponent->BindAction(ShowCommandMenuAction, ETriggerEvent::Started, this, &AWPGCharacter::HandleShowCommandMenu);
 
 		// Showing Pause Menu
-		EnhancedInputComponent->BindAction(ShowPauseMenuAction, ETriggerEvent::Started, this, &AWPGCharacter::ShowPauseMenu);
+		EnhancedInputComponent->BindAction(ShowPauseMenuAction, ETriggerEvent::Started, this, &AWPGCharacter::HandleShowPauseMenu);
+	}
+}
+
+void AWPGCharacter::InitAbilities(TArray<TSubclassOf<UWPGGameplayAbility>> AbilitiesToAdd)
+{
+	if (IsValid(AbilitySystemComponent))
+	{
+		for (auto AbilityToAdd : AbilitiesToAdd)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(
+				AbilityToAdd,
+				AbilityToAdd.GetDefaultObject()->GetAbilityLevel(),
+				static_cast<int32>(AbilityToAdd.GetDefaultObject()->GetPlayerAbilityInputID()),
+				this
+			));
+		}
 	}
 }
 
@@ -89,4 +109,24 @@ void AWPGCharacter::Look(const FInputActionValue& Value)
 
 	// Yaw input
 	AddControllerYawInput(Value.Get<FVector2D>().X);
+}
+
+void AWPGCharacter::HandleJumpPressed()
+{
+	AbilitySystemComponent->AbilityLocalInputPressed(static_cast<int32>(EPlayerAbilityInputID::Jump));
+}
+
+void AWPGCharacter::HandleJumpReleased()
+{
+	AbilitySystemComponent->AbilityLocalInputReleased(static_cast<int32>(EPlayerAbilityInputID::Jump));
+}
+
+void AWPGCharacter::HandleShowCommandMenu()
+{
+	AbilitySystemComponent->AbilityLocalInputPressed(static_cast<int32>(EPlayerAbilityInputID::ToggleCommandMenu));
+}
+
+void AWPGCharacter::HandleShowPauseMenu()
+{
+	AbilitySystemComponent->AbilityLocalInputPressed(static_cast<int32>(EPlayerAbilityInputID::TogglePauseMenu));
 }
